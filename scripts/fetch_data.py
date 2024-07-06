@@ -4,7 +4,7 @@ import pandas as pd
 def fetch_bitcoin_data():
     url = "https://api.coingecko.com/api/v3/coins/bitcoin/market_chart"
     params = {
-        "vs_currency": "usd",
+        "vs_currency": "cad",
         "days": "30"  # Fetch data for the last 30 days
     }
     response = requests.get(url, params=params)
