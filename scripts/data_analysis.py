@@ -12,7 +12,7 @@ def load_data():
     results = session.query(BitcoinPrice).all()
     data = [(row.timestamp, row.price) for row in results]
     df = pd.DataFrame(data, columns=['timestamp', 'price'])
-    df.set_index('timestamp', inplace=True)  # Fixed the typo here
+    df.set_index('timestamp', inplace=True)
     session.close()
     return df
 
@@ -28,7 +28,7 @@ def plot_price(df):
     plt.ylabel('Price (CAD)')
     plt.title('Bitcoin Price Over Time')
     plt.legend()
-    plt.show()
+    plt.show(block=False)
 
 def plot_returns(df):
     plt.figure(figsize=(12, 6))
@@ -37,7 +37,7 @@ def plot_returns(df):
     plt.ylabel('Daily Return')
     plt.title('Bitcoin Daily Returns Over Time')
     plt.legend()
-    plt.show()
+    plt.show(block=False)
 
 def plot_volatility(df):
     plt.figure(figsize=(12, 6))
@@ -46,7 +46,7 @@ def plot_volatility(df):
     plt.ylabel('Volatility (Annualized)')
     plt.title('Bitcoin Volatility Over Time')
     plt.legend()
-    plt.show()
+    plt.show(block=False)
 
 if __name__ == "__main__":
     df = load_data()
@@ -54,3 +54,4 @@ if __name__ == "__main__":
     plot_price(df)
     plot_returns(df)
     plot_volatility(df)
+    plt.show()  # Keeps all figures open
