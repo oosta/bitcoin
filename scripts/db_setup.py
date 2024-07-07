@@ -13,7 +13,9 @@ class BitcoinPrice(Base):
 
 def save_to_db(df):
     engine = create_engine('sqlite:///../data/bitcoin.db')
-    Base.metadata.create_all(engine)
+    Base.metadata.drop_all(engine)  # Drop all tables in the database
+    Base.metadata.create_all(engine)  # Create new tables
+    
     Session = sessionmaker(bind=engine)
     session = Session()
 

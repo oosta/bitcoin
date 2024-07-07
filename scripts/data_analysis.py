@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from db_setup import BitcoinPrice  # Import the BitcoinPrice model
+from trading_signals import get_latest_signal, calculate_trading_signal  # Import trading signal functions
 
 def load_data():
     engine = create_engine('sqlite:///../data/bitcoin.db')
@@ -23,29 +24,43 @@ def calculate_metrics(df):
 
 def plot_price(df):
     plt.figure(figsize=(12, 6))
-    plt.plot(df.index, df['price'], label='Bitcoin Price')
+    plt.plot(df.index, df['price'], label='Bitcoin Price', color='blue')
     plt.xlabel('Date')
-    plt.ylabel('Price (CAD)')
+    plt.ylabel('Price (USD)')
     plt.title('Bitcoin Price Over Time')
     plt.legend()
+    plt.grid(True)
     plt.show(block=False)
 
 def plot_returns(df):
     plt.figure(figsize=(12, 6))
-    plt.plot(df.index, df['daily_return'], label='Daily Returns')
+    plt.plot(df.index, df['daily_return'], label='Daily Returns', color='green')
     plt.xlabel('Date')
     plt.ylabel('Daily Return')
     plt.title('Bitcoin Daily Returns Over Time')
     plt.legend()
+    plt.grid(True)
     plt.show(block=False)
 
 def plot_volatility(df):
     plt.figure(figsize=(12, 6))
-    plt.plot(df.index, df['volatility'], label='Volatility')
+    plt.plot(df.index, df['volatility'], label='Volatility', color='red')
     plt.xlabel('Date')
     plt.ylabel('Volatility (Annualized)')
     plt.title('Bitcoin Volatility Over Time')
     plt.legend()
+    plt.grid(True)
+    plt.show(block=False)
+
+def plot_signals(df):
+    plt.figure(figsize=(12, 6))
+    df['signal_score'] = calculate_trading_signal(df)
+    plt.plot(df.index, df['signal_score'], label='Trading Signal Score', color='purple')
+    plt.xlabel('Date')
+    plt.ylabel('Signal Score')
+    plt.title('Trading Signal Score Over Time')
+    plt.legend()
+    plt.grid(True)
     plt.show(block=False)
 
 if __name__ == "__main__":
@@ -54,4 +69,9 @@ if __name__ == "__main__":
     plot_price(df)
     plot_returns(df)
     plot_volatility(df)
+    plot_signals(df)
     plt.show()  # Keeps all figures open
+
+    # Calculate and display the latest trading signal
+    latest_signal = get_latest_signal(df)
+    print(f"Latest trading signal: {latest_signal}")
