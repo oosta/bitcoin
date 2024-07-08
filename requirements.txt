@@ -1,0 +1,4 @@
+matplotlib
+sqlalchemy
+pandas
+requests

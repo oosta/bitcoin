@@ -7,10 +7,22 @@ def calculate_trading_signal(df):
     df['rsi'] = calculate_rsi(df)
     df['macd'], df['macd_signal'] = calculate_macd(df)
 
-    # Example criteria: simple conditions to combine indicators
-    df['buy_signal'] = ((df['price'] > df['sma_50']) & (df['price'] > df['sma_200']) & (df['rsi'] < 30) & (df['macd'] > df['macd_signal'])).astype(int)
-    df['sell_signal'] = ((df['price'] < df['sma_50']) & (df['price'] < df['sma_200']) & (df['rsi'] > 70) & (df['macd'] < df['macd_signal'])).astype(int)
+    # Debugging: Print some intermediate values
+    print(df[['price', 'sma_50', 'sma_200', 'rsi', 'macd', 'macd_signal']].tail(10))
+
+    # Temporarily loosened criteria for debugging
+    df['buy_signal'] = ((df['price'] > df['sma_50']) & 
+                        (df['price'] > df['sma_200']) & 
+                        (df['rsi'] < 70) &  # Loosened RSI threshold
+                        (df['macd'] > df['macd_signal'])).astype(int)
     
+    df['sell_signal'] = ((df['price'] < df['sma_50']) & 
+                         (df['price'] < df['sma_200']) & 
+                         (df['rsi'] > 30) &  # Loosened RSI threshold
+                         (df['macd'] < df['macd_signal'])).astype(int)
+
+    print(f"Buy signals: {df['buy_signal'].sum()}, Sell signals: {df['sell_signal'].sum()}")  # Debugging
+
     df['signal_score'] = 50 + (df['buy_signal'] * 50) - (df['sell_signal'] * 50)  # Score from 0 to 100
     return df['signal_score']
 

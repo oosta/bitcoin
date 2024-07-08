@@ -1,7 +1,12 @@
+import os
 import pandas as pd
 from sqlalchemy import create_engine, Column, Integer, Float, DateTime
 from sqlalchemy.orm import declarative_base, sessionmaker
 from fetch_data import fetch_bitcoin_data  # Import the function from fetch_data
+
+# Ensure the data directory exists
+if not os.path.exists('../data'):
+    os.makedirs('../data')
 
 Base = declarative_base()
 
@@ -13,9 +18,7 @@ class BitcoinPrice(Base):
 
 def save_to_db(df):
     engine = create_engine('sqlite:///../data/bitcoin.db')
-    Base.metadata.drop_all(engine)  # Drop all tables in the database
-    Base.metadata.create_all(engine)  # Create new tables
-    
+    Base.metadata.create_all(engine)
     Session = sessionmaker(bind=engine)
     session = Session()
 
