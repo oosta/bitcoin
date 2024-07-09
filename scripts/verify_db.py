@@ -1,17 +1,14 @@
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-from db_setup import BitcoinPrice  # Import the BitcoinPrice model
+import sqlite3
+import pandas as pd
 
-def verify_data():
-    engine = create_engine('sqlite:///../data/bitcoin.db')
-    Session = sessionmaker(bind=engine)
-    session = Session()
-
-    results = session.query(BitcoinPrice).all()
-    for row in results:
-        print(row.timestamp, row.price)
-    
-    session.close()
+def load_from_db():
+    conn = sqlite3.connect('data/bitcoin.db')
+    df = pd.read_sql('SELECT * FROM bitcoin', conn)
+    conn.close()
+    return df
 
 if __name__ == "__main__":
-    verify_data()
+    df = load_from_db()
+    print("Data loaded from database:")
+    print(df.head())
+    print(f"Total records: {len(df)}")

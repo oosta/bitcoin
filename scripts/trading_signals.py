@@ -1,32 +1,32 @@
-import pandas as pd
-from technical_indicators import calculate_sma, calculate_ema, calculate_rsi, calculate_macd
-
-def calculate_trading_signal(df):
-    df['sma_50'] = calculate_sma(df, 50)
-    df['sma_200'] = calculate_sma(df, 200)
-    df['rsi'] = calculate_rsi(df)
-    df['macd'], df['macd_signal'] = calculate_macd(df)
-
-    # Debugging: Print some intermediate values
-    print(df[['price', 'sma_50', 'sma_200', 'rsi', 'macd', 'macd_signal']].tail(10))
-
-    # Temporarily loosened criteria for debugging
-    df['buy_signal'] = ((df['price'] > df['sma_50']) & 
-                        (df['price'] > df['sma_200']) & 
-                        (df['rsi'] < 70) &  # Loosened RSI threshold
-                        (df['macd'] > df['macd_signal'])).astype(int)
+# def calculate_signal(df):
+#     df['buy_signal'] = 0
+#     df['sell_signal'] = 0
+#     df['signal_score'] = 50
     
-    df['sell_signal'] = ((df['price'] < df['sma_50']) & 
-                         (df['price'] < df['sma_200']) & 
-                         (df['rsi'] > 30) &  # Loosened RSI threshold
-                         (df['macd'] < df['macd_signal'])).astype(int)
+#     for i in range(len(df)):
+#         rsi = df['rsi'].iloc[i]
+#         macd = df['macd'].iloc[i]
+#         macd_signal = df['macd_signal'].iloc[i]
+        
+#         if rsi < 30 and macd > macd_signal:
+#             df.at[df.index[i], 'buy_signal'] = 1
+#         elif rsi > 70 and macd < macd_signal:
+#             df.at[df.index[i], 'sell_signal'] = 1
+            
+#         df.at[df.index[i], 'signal_score'] = 50 + df['buy_signal'].sum() - df['sell_signal'].sum()
+    
+#     return df
 
-    print(f"Buy signals: {df['buy_signal'].sum()}, Sell signals: {df['sell_signal'].sum()}")  # Debugging
-
-    df['signal_score'] = 50 + (df['buy_signal'] * 50) - (df['sell_signal'] * 50)  # Score from 0 to 100
-    return df['signal_score']
-
-def get_latest_signal(df):
-    signal_score = calculate_trading_signal(df)
-    latest_signal = signal_score.iloc[-1]
-    return latest_signal
+# def get_latest_signal(df):
+#     latest_row = df.iloc[-1]
+#     score = latest_row['signal_score']
+#     if score >= 75:
+#         return f"{score} - Strong Buy"
+#     elif score >= 55:
+#         return f"{score} - Buy"
+#     elif score <= 25:
+#         return f"{score} - Strong Sell"
+#     elif score <= 45:
+#         return f"{score} - Sell"
+#     else:
+#         return f"{score} - Hold"

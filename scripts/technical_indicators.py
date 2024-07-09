@@ -1,26 +1,26 @@
-import pandas as pd
+# import pandas as pd
 
-def calculate_sma(df, window):
-    return df['price'].rolling(window=window).mean()
+# def calculate_sma(df, window):
+#     return df['price'].rolling(window=window).mean()
 
-def calculate_ema(df, window):
-    return df['price'].ewm(span=window, adjust=False).mean()
+# def calculate_rsi(df, window=14):
+#     delta = df['price'].diff()
+#     gain = (delta.where(delta > 0, 0)).rolling(window=window).mean()
+#     loss = (-delta.where(delta < 0, 0)).rolling(window=window).mean()
+#     rs = gain / loss
+#     df['rsi'] = 100 - (100 / (1 + rs))
+#     return df
 
-def calculate_rsi(df, window=14):
-    delta = df['price'].diff()
-    gain = (delta.where(delta > 0, 0)).fillna(0)
-    loss = (-delta.where(delta < 0, 0)).fillna(0)
-    
-    avg_gain = gain.rolling(window=window, min_periods=1).mean()
-    avg_loss = loss.rolling(window=window, min_periods=1).mean()
-    
-    rs = avg_gain / avg_loss
-    rsi = 100 - (100 / (1 + rs))
-    return rsi
+# def calculate_macd(df, short_window=12, long_window=26, signal_window=9):
+#     df['ema_short'] = df['price'].ewm(span=short_window, adjust=False).mean()
+#     df['ema_long'] = df['price'].ewm(span=long_window, adjust=False).mean()
+#     df['macd'] = df['ema_short'] - df['ema_long']
+#     df['macd_signal'] = df['macd'].ewm(span=signal_window, adjust=False).mean()
+#     return df
 
-def calculate_macd(df, short_window=12, long_window=26, signal_window=9):
-    short_ema = calculate_ema(df, short_window)
-    long_ema = calculate_ema(df, long_window)
-    macd = short_ema - long_ema
-    signal = macd.ewm(span=signal_window, adjust=False).mean()
-    return macd, signal
+# def calculate_indicators(df):
+#     df['sma_50'] = calculate_sma(df, 50)
+#     df['sma_200'] = calculate_sma(df, 200)
+#     df = calculate_rsi(df, 14)
+#     df = calculate_macd(df)
+#     return df
