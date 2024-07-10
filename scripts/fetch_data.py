@@ -21,8 +21,20 @@ def fetch_bitcoin_data():
     df = pd.DataFrame({'timestamp': timestamps, 'price': prices})
     return df
 
-if __name__ == "__main__":
-    df = fetch_bitcoin_data()
-    print(df.head())
+def fetch_data():
+    df_prices = fetch_bitcoin_data()
+    df_fng = pd.read_csv('data/fear_greed_index.csv')
+    
+    # Ensure both timestamps are in datetime format
+    df_prices['timestamp'] = pd.to_datetime(df_prices['timestamp'])
+    df_fng['timestamp'] = pd.to_datetime(df_fng['timestamp'])
+    
+    # Merge the dataframes on timestamp
+    df = pd.merge(df_prices, df_fng, on='timestamp', how='left')
     df.to_csv('data/bitcoin_data.csv', index=False)
+    return df
+
+if __name__ == "__main__":
+    df = fetch_data()
+    print(df.head())
     print(f"Total records fetched: {len(df)}")
