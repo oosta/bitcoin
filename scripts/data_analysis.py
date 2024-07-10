@@ -53,7 +53,6 @@ def calculate_trading_signals(df):
 
     return df
 
-
 def plot_indicators(df):
     if not os.path.exists('plots'):
         os.makedirs('plots')
@@ -93,6 +92,14 @@ def plot_indicators(df):
     plt.legend()
     plt.title('Bollinger Bands')
     plt.savefig('plots/bollinger_bands.png')
+
+    plt.figure(figsize=(10, 5))
+    plt.plot(df['price'], label='Bitcoin Price', alpha=0.5)
+    plt.scatter(df[df['buy_signal'] == 1].index, df[df['buy_signal'] == 1]['price'], label='Buy Signal', marker='^', color='g', alpha=1)
+    plt.scatter(df[df['sell_signal'] == 1].index, df[df['sell_signal'] == 1]['price'], label='Sell Signal', marker='v', color='r', alpha=1)
+    plt.legend()
+    plt.title('Bitcoin Price with Buy/Sell Signals')
+    plt.savefig('plots/price_with_signals.png')
 
 def make_decision(df):
     latest_data = df.iloc[-1]
