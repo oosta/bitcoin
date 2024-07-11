@@ -54,22 +54,31 @@ def calculate_trading_signals(df):
     df['signal_score'] = 50 + 50 * (rsi_score + macd_score + bollinger_score + fear_greed_score + volume_score + trends_score)
 
     # Define buy and sell signals based on the combined score
-    df['buy_signal'] = (df['signal_score'] > 60).astype(int)
-    df['sell_signal'] = (df['signal_score'] < 40).astype(int)
+    df['buy_signal'] = ((df['signal_score'] >= 56) & (df['signal_score'] <= 69)).astype(int)
+    df['sell_signal'] = ((df['signal_score'] >= 30) & (df['signal_score'] <= 44)).astype(int)
+    df['strong_buy_signal'] = (df['signal_score'] > 70).astype(int)
+    df['strong_sell_signal'] = (df['signal_score'] < 30).astype(int)
+    df['hold_signal'] = ((df['signal_score'] >= 45) & (df['signal_score'] <= 55)).astype(int)
 
     return df
+
+def save_signal_scores(df):
+    df[['price', 'signal_score', 'buy_signal', 'sell_signal', 'strong_buy_signal', 'strong_sell_signal', 'hold_signal']].to_csv('data/signal_scores.csv')
+    print("Signal scores saved to 'data/signal_scores.csv'")
 
 def make_decision(df):
     latest_data = df.iloc[-1]
     decision = "Hold"
     if latest_data['signal_score'] > 70:
         decision = "Strong Buy"
-    elif latest_data['signal_score'] > 50:
+    elif latest_data['signal_score'] >= 56:
         decision = "Buy"
+    elif latest_data['signal_score'] >= 45:
+        decision = "Hold"
+    elif latest_data['signal_score'] >= 30:
+        decision = "Sell"
     elif latest_data['signal_score'] < 30:
         decision = "Strong Sell"
-    elif latest_data['signal_score'] < 50:
-        decision = "Sell"
 
     summary = (
         f"Latest Bitcoin Price: {latest_data['price']}\n"
@@ -96,15 +105,43 @@ def backtest_strategy(df):
     initial_balance = 10000  # Initial balance in CAD
     balance = initial_balance
     bitcoin_held = 0
+    backtest_results = []
+
+    previous_total_value = initial_balance
+
     for i in range(len(df)):
-        if df['buy_signal'].iloc[i] == 1 and balance > 0:
+        current_price = df['price'].iloc[i]
+
+        if df['strong_buy_signal'].iloc[i] == 1 and balance > 0:
             # Buy Bitcoin
-            bitcoin_held = balance / df['price'].iloc[i]
+            bitcoin_held = balance / current_price
+            balance = 0
+        elif df['strong_sell_signal'].iloc[i] == 1 and bitcoin_held > 0:
+            # Sell Bitcoin
+            balance = bitcoin_held * current_price
+            bitcoin_held = 0
+        elif df['buy_signal'].iloc[i] == 1 and balance > 0:
+            # Buy Bitcoin
+            bitcoin_held = balance / current_price
             balance = 0
         elif df['sell_signal'].iloc[i] == 1 and bitcoin_held > 0:
             # Sell Bitcoin
-            balance = bitcoin_held * df['price'].iloc[i]
+            balance = bitcoin_held * current_price
             bitcoin_held = 0
+
+        total_value = balance + (bitcoin_held * current_price)
+        open_pnl = total_value - initial_balance
+        daily_pnl = total_value - previous_total_value
+
+        backtest_results.append({
+            'timestamp': df.index[i],
+            'current_cash_balance': balance,
+            'current_bitcoin_holding': bitcoin_held,
+            'open_pnl': open_pnl,
+            'daily_pnl': daily_pnl
+        })
+
+        previous_total_value = total_value
 
     final_balance = balance + (bitcoin_held * df['price'].iloc[-1])
     profit_loss = final_balance - initial_balance
@@ -112,6 +149,10 @@ def backtest_strategy(df):
     print(f"Initial Balance: ${initial_balance:.2f} CAD")
     print(f"Final Balance: ${final_balance:.2f} CAD")
     print(f"Profit/Loss: ${profit_loss:.2f} CAD")
+
+    backtest_df = pd.DataFrame(backtest_results)
+    backtest_df.to_csv('data/backtest_results.csv', index=False)
+    print("Backtest results saved to 'data/backtest_results.csv'")
 
 def main():
     df = load_data()
@@ -124,13 +165,19 @@ def main():
 
     df = calculate_trading_signals(df)
     print("Signal Calculation:")
-    print(df[['buy_signal', 'sell_signal', 'signal_score']].tail())
+    print(df[['buy_signal', 'sell_signal', 'strong_buy_signal', 'strong_sell_signal', 'hold_signal', 'signal_score']].tail())
 
     # Plot indicators and Google Trends
     plot_indicators(df)
     plot_google_trends(df)
 
+    # Save signal scores
+    save_signal_scores(df)
+
+    # Make trading decision
     make_decision(df)
+
+    # Backtest strategy
     backtest_strategy(df)
     print("Analysis complete. Plots saved to 'plots' directory.")
 
