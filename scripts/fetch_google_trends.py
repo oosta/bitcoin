@@ -8,7 +8,7 @@ def fetch_google_trends():
     kw_list = ["Bitcoin"]
     
     end_date = datetime.now()
-    start_date = end_date - timedelta(days=365)
+    start_date = end_date - timedelta(days=730) # Fetch data for the last 730 days (2 years)
     timeframe = f"{start_date.strftime('%Y-%m-%d')} {end_date.strftime('%Y-%m-%d')}"
     
     pytrends.build_payload(kw_list, cat=0, timeframe=timeframe, geo='', gprop='')

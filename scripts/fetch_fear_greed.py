@@ -3,7 +3,7 @@ import pandas as pd
 from datetime import datetime, timedelta
 
 def fetch_fear_greed():
-    url = "https://api.alternative.me/fng/?limit=365"
+    url = "https://api.alternative.me/fng/?limit=730" # Fetch data for the last 730 days (2 years)
     response = requests.get(url)
     data = response.json()['data']
     df = pd.DataFrame(data)
