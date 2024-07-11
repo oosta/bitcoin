@@ -37,10 +37,10 @@ def calculate_trading_signals(df):
     # Define weights for each indicator
     weight_rsi = 0.2
     weight_macd = 0.2
-    weight_bollinger = 0.2
-    weight_fear_greed = 0.2
+    weight_bollinger = 0
+    weight_fear_greed = 0.15
     weight_volume = 0.1
-    weight_trends = 0.1
+    weight_trends = 0.35
 
     # Calculate individual scores
     rsi_score = ((df['rsi'] < 30) * weight_rsi) - ((df['rsi'] > 70) * weight_rsi)
