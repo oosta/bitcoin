@@ -54,11 +54,11 @@ def calculate_trading_signals(df):
     df['signal_score'] = 50 + 50 * (rsi_score + macd_score + bollinger_score + fear_greed_score + volume_score + trends_score)
 
     # Define buy and sell signals based on the combined score
-    df['buy_signal'] = ((df['signal_score'] >= 56) & (df['signal_score'] <= 69)).astype(int)
-    df['sell_signal'] = ((df['signal_score'] >= 30) & (df['signal_score'] <= 44)).astype(int)
-    df['strong_buy_signal'] = (df['signal_score'] > 70).astype(int)
-    df['strong_sell_signal'] = (df['signal_score'] < 30).astype(int)
-    df['hold_signal'] = ((df['signal_score'] >= 45) & (df['signal_score'] <= 55)).astype(int)
+    df['buy_signal'] = ((df['signal_score'] >= 61) & (df['signal_score'] <= 74)).astype(int)
+    df['sell_signal'] = ((df['signal_score'] >= 25) & (df['signal_score'] <= 39)).astype(int)
+    df['strong_buy_signal'] = (df['signal_score'] > 75).astype(int)
+    df['strong_sell_signal'] = (df['signal_score'] < 25).astype(int)
+    df['hold_signal'] = ((df['signal_score'] >= 40) & (df['signal_score'] <= 60)).astype(int)
 
     return df
 
@@ -69,15 +69,15 @@ def save_signal_scores(df):
 def make_decision(df):
     latest_data = df.iloc[-1]
     decision = "Hold"
-    if latest_data['signal_score'] > 70:
+    if latest_data['signal_score'] > 75:
         decision = "Strong Buy"
-    elif latest_data['signal_score'] >= 56:
+    elif latest_data['signal_score'] >= 61:
         decision = "Buy"
-    elif latest_data['signal_score'] >= 45:
+    elif latest_data['signal_score'] >= 40:
         decision = "Hold"
-    elif latest_data['signal_score'] >= 30:
+    elif latest_data['signal_score'] >= 25:
         decision = "Sell"
-    elif latest_data['signal_score'] < 30:
+    elif latest_data['signal_score'] < 25:
         decision = "Strong Sell"
 
     summary = (

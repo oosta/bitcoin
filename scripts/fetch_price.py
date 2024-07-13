@@ -12,7 +12,7 @@ def fetch_bitcoin_price():
     params = {
         "symbol": "BTCUSDT",
         "interval": "1d",
-        "limit": 730  # Fetch data for the last 730 days (2 years)
+        "limit": 800  # Fetch data for the last 730 days (2 years)
     }
     response = requests.get(url, params=params)
     data = response.json()
