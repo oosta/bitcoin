@@ -78,3 +78,17 @@ def plot_google_trends(df):
     plt.grid()
     plt.savefig('plots/price_vs_google_trends.png')
     plt.close()
+
+    # Plot for the strong buy signals only:
+    plt.figure(figsize=(12, 6))
+    plt.plot(df.index, df['price'], label='Bitcoin Price', alpha=0.5)
+    plt.scatter(df[df['strong_buy_signal'] == 1].index, df[df['strong_buy_signal'] == 1]['price'], label='Strong Buy Signal', color='green', marker='^', alpha=1)
+
+    plt.title('Strong Buy Signals')
+    plt.xlabel('Date')
+    plt.ylabel('Price (CAD)')
+    plt.legend()
+    plt.grid()
+    plt.savefig('plots/strong_buy_signals.png')
+    plt.close()
+
